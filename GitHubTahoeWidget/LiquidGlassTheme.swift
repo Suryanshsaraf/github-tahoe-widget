@@ -7,37 +7,37 @@ public extension Color {
     
     static func colorForLevel(_ level: Int, theme: String) -> Color {
         if level == 0 {
-            return Color.white.opacity(0.08)
+            return Color(red: 22/255, green: 27/255, blue: 34/255) // #161b22
         }
         
         switch theme {
         case "aurora-glass":
             switch level {
-            case 1: return Color.green.opacity(0.25)
-            case 2: return Color.green.opacity(0.55)
-            case 3: return Color.cyan.opacity(0.7)
-            default: return Color.cyan
+            case 1: return Color(red: 11/255, green: 60/255, blue: 93/255)
+            case 2: return Color(red: 50/255, green: 140/255, blue: 193/255)
+            case 3: return Color(red: 152/255, green: 215/255, blue: 194/255)
+            default: return Color(red: 0/255, green: 240/255, blue: 255/255)
             }
         case "sunset-glow":
             switch level {
-            case 1: return Color.orange.opacity(0.25)
-            case 2: return Color.orange.opacity(0.55)
-            case 3: return Color.red.opacity(0.75)
-            default: return Color.tahoePink
+            case 1: return Color(red: 74/255, green: 28/255, blue: 28/255)
+            case 2: return Color(red: 189/255, green: 64/255, blue: 36/255)
+            case 3: return Color(red: 250/255, green: 129/255, blue: 47/255)
+            default: return Color(red: 255/255, green: 171/255, blue: 118/255)
             }
         case "graphite-matte":
             switch level {
-            case 1: return Color.white.opacity(0.2)
-            case 2: return Color.white.opacity(0.4)
-            case 3: return Color.white.opacity(0.65)
-            default: return Color.white.opacity(0.9)
+            case 1: return Color(red: 48/255, green: 54/255, blue: 61/255) // #30363d
+            case 2: return Color(red: 110/255, green: 118/255, blue: 129/255) // #6e7681
+            case 3: return Color(red: 177/255, green: 186/255, blue: 196/255) // #b1bac4
+            default: return Color(red: 240/255, green: 246/255, blue: 252/255) // #f0f6fc
             }
-        default: // tahoe-dream
+        default: // tahoe-dream (Standard GitHub Greens)
             switch level {
-            case 1: return Color.tahoeCyan.opacity(0.25)
-            case 2: return Color.tahoeCyan.opacity(0.6)
-            case 3: return Color.tahoePurple.opacity(0.75)
-            default: return Color.tahoePink
+            case 1: return Color(red: 14/255, green: 68/255, blue: 41/255) // #0e4429
+            case 2: return Color(red: 0/255, green: 109/255, blue: 50/255) // #006d32
+            case 3: return Color(red: 38/255, green: 166/255, blue: 65/255) // #26a641
+            default: return Color(red: 57/255, green: 211/255, blue: 83/255) // #39d353
             }
         }
     }

@@ -1,7 +1,7 @@
 import WidgetKit
 import SwiftUI
 
-// Core Entry View representing the widget UI
+// Core Entry View representing the widget UI (Sleek GitHub Dark Mode Style)
 public struct TahoeWidgetEntryView : View {
     var entry: TahoeWidgetTimelineProvider.Entry
     
@@ -14,10 +14,6 @@ public struct TahoeWidgetEntryView : View {
     public var body: some View {
         ZStack {
             if let profile = entry.profile {
-                // Drifting Liquid Orbs Background
-                LiquidBlobsView(theme: entry.theme)
-                
-                // Frosted Glass Layer
                 VStack(spacing: 0) {
                     switch family {
                     case .systemSmall:
@@ -28,293 +24,313 @@ public struct TahoeWidgetEntryView : View {
                         renderLargeWidget(profile: profile)
                     }
                 }
-                .padding(16)
             } else {
                 // Setup / Welcome Screen
                 VStack(spacing: 8) {
-                    Text("GitHub Tahoe")
+                    Image(systemName: "square.grid.3x3.topleft.filled")
+                        .foregroundColor(.green)
+                        .font(.title)
+                    Text("GitHub Contributions")
                         .font(.headline)
-                        .foregroundStyle(.cyan)
-                    Text("Configure your username in the configurator app to activate.")
+                        .foregroundColor(.white)
+                    Text("Please open the configurator app to save your username.")
                         .font(.caption)
                         .multilineTextAlignment(.center)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
                 }
                 .padding()
             }
         }
-        .liquidGlassBacking() // Custom liquid glass modifier
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(14)
     }
     
-    // --- 1. SMALL WIDGET LAYOUT ---
+    // --- 1. SMALL WIDGET LAYOUT (Sleek Mini Graph) ---
     private func renderSmallWidget(profile: GitHubUserProfile) -> some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: "square.grid.3x3.topleft.filled")
-                    .foregroundColor(.cyan)
-                    .font(.title3)
-                Spacer()
-                Text("🔥 \(profile.currentStreak)")
-                    .font(.caption)
-                    .fontWeight(.bold)
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(profile.name)
-                    .font(.subheadline)
-                    .fontWeight(.bold)
-                    .lineLimit(1)
+        VStack(alignment: .leading, spacing: 6) {
+            // Header
+            VStack(alignment: .leading, spacing: 1) {
                 Text("@\(profile.username)")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.white)
+                Text("\(formatNumber(profile.totalContributions)) in last year")
+                    .font(.system(size: 9))
+                    .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
             
-            HStack {
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Contributions")
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
-                        .textCase(.uppercase)
-                    Text("\(profile.totalContributions)")
-                        .font(.headline)
-                        .fontWeight(.bold)
-                }
-                Spacer()
-            }
-        }
-    }
-    
-    // --- 2. MEDIUM WIDGET LAYOUT (Dashboard + 18-Week Graph) ---
-    private func renderMediumWidget(profile: GitHubUserProfile) -> some View {
-        VStack(spacing: 12) {
-            // Header Profile & Streak counts
-            HStack(alignment: .center) {
-                // Profile Avatar Wrapper
-                if !profile.avatarUrl.isEmpty, let url = URL(string: profile.avatarUrl) {
-                    AsyncImage(url: url) { image in
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 36, height: 36)
-                            .clipShape(Circle())
-                    } placeholder: {
-                        Circle().fill(Color.white.opacity(0.1)).frame(width: 36, height: 36)
-                    }
-                    .overlay(Circle().stroke(Color.white.opacity(0.3), lineWidth: 1))
-                } else {
-                    Circle().fill(Color.white.opacity(0.15)).frame(width: 36, height: 36)
-                }
-                
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(profile.name)
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                    Text("@\(profile.username)")
-                        .font(.system(size: 9))
-                        .foregroundColor(.cyan)
-                }
-                
-                Spacer()
-                
-                // Badges
-                HStack(spacing: 6) {
-                    VStack(alignment: .center, spacing: 2) {
-                        Text("TOTAL")
-                            .font(.system(size: 7))
-                            .foregroundColor(.secondary)
-                        Text("\(profile.totalContributions)")
-                            .font(.system(size: 11, weight: .bold))
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.white.opacity(0.06))
-                    .cornerRadius(6)
-                    
-                    VStack(alignment: .center, spacing: 2) {
-                        Text("STREAK")
-                            .font(.system(size: 7))
-                            .foregroundColor(.secondary)
-                        Text("\(profile.currentStreak) 🔥")
-                            .font(.system(size: 11, weight: .bold))
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.white.opacity(0.06))
-                    .cornerRadius(6)
-                }
-            }
-            
-            // Contribution Grid (Last 18 Weeks)
-            let weeksToShow = 18
+            // 7x16 Grid for Small Widget
+            let weeksToShow = 16
             let daysToShow = weeksToShow * 7
             let recentDays = Array(profile.contributions.suffix(daysToShow))
-            let chunkedWeeks = recentDays.publisher.collect(7) // Chunk days into 7-day columns
             
-            // Custom CSS-like Grid using Stack
-            HStack(spacing: 3) {
+            HStack(spacing: 1.3) {
                 ForEach(0..<weeksToShow, id: \.self) { weekIdx in
                     let startIndex = weekIdx * 7
-                    if startIndex < recentDays.count {
-                        VStack(spacing: 3) {
-                            ForEach(0..<7, id: \.self) { dayIdx in
-                                let index = startIndex + dayIdx
-                                if index < recentDays.count {
-                                    let day = recentDays[index]
-                                    RoundedRectangle(cornerRadius: 2.5)
-                                        .fill(Color.colorForLevel(day.level, theme: entry.theme))
-                                        .frame(width: 10, height: 10)
-                                }
+                    VStack(spacing: 1.3) {
+                        ForEach(0..<7, id: \.self) { dayIdx in
+                            let index = startIndex + dayIdx
+                            if index < recentDays.count {
+                                let day = recentDays[index]
+                                RoundedRectangle(cornerRadius: 1)
+                                    .fill(Color.colorForLevel(day.level, theme: entry.theme))
+                                    .frame(width: 5.0, height: 5.0)
+                            } else {
+                                RoundedRectangle(cornerRadius: 1)
+                                    .fill(Color.colorForLevel(0, theme: entry.theme))
+                                    .frame(width: 5.0, height: 5.0)
                             }
                         }
                     }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .center)
+            
+            Spacer()
+            
+            // Streak
+            HStack {
+                Text("Streak: \(profile.currentStreak) days")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundColor(.white)
+                Spacer()
+                Text("🔥")
+                    .font(.system(size: 10))
+            }
         }
     }
     
-    // --- 3. LARGE WIDGET LAYOUT (Full Profile + 20-Week Graph + PR List) ---
-    private func renderLargeWidget(profile: GitHubUserProfile) -> some View {
-        VStack(spacing: 16) {
-            // Header Profile Card
-            HStack(spacing: 12) {
-                if !profile.avatarUrl.isEmpty, let url = URL(string: profile.avatarUrl) {
-                    AsyncImage(url: url) { image in
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 44, height: 44)
-                            .clipShape(Circle())
-                    } placeholder: {
-                        Circle().fill(Color.white.opacity(0.1)).frame(width: 44, height: 44)
-                    }
-                    .overlay(Circle().stroke(Color.white.opacity(0.3), lineWidth: 1))
+    // --- 2. MEDIUM WIDGET LAYOUT (Official GitHub Grid View) ---
+    private func renderMediumWidget(profile: GitHubUserProfile) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Header
+            Text("\(formatNumber(profile.totalContributions)) contributions in the last year")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(Color(red: 230/255, green: 237/255, blue: 243/255)) // #e6edf3
+                .padding(.leading, 24)
+                .padding(.top, 2)
+            
+            // Month labels on top
+            let weeksToShow = 53
+            let daysToShow = weeksToShow * 7
+            let recentDays = Array(profile.contributions.suffix(daysToShow))
+            
+            renderMonthLabels(recentDays: recentDays)
+                .padding(.leading, 24)
+            
+            // Day Labels & Grid
+            HStack(alignment: .top, spacing: 6) {
+                // Day Labels Mon, Wed, Fri
+                VStack(alignment: .leading, spacing: 1.2) {
+                    Text("")
+                        .font(.system(size: 8))
+                        .frame(height: 4.0) // Space for Sunday
+                    Text("Mon")
+                        .font(.system(size: 8))
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                        .frame(height: 4.0)
+                    Text("")
+                        .font(.system(size: 8))
+                        .frame(height: 4.0) // Space for Tuesday
+                    Text("Wed")
+                        .font(.system(size: 8))
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                        .frame(height: 4.0)
+                    Text("")
+                        .font(.system(size: 8))
+                        .frame(height: 4.0) // Space for Thursday
+                    Text("Fri")
+                        .font(.system(size: 8))
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                        .frame(height: 4.0)
                 }
+                .frame(width: 18, alignment: .leading)
                 
+                // 53 Weeks Grid
+                HStack(spacing: 1.2) {
+                    ForEach(0..<weeksToShow, id: \.self) { weekIdx in
+                        let startIndex = weekIdx * 7
+                        VStack(spacing: 1.2) {
+                            ForEach(0..<7, id: \.self) { dayIdx in
+                                let index = startIndex + dayIdx
+                                if index < recentDays.count {
+                                    let day = recentDays[index]
+                                    RoundedRectangle(cornerRadius: 1)
+                                        .fill(Color.colorForLevel(day.level, theme: entry.theme))
+                                        .frame(width: 4.0, height: 4.0)
+                                } else {
+                                    RoundedRectangle(cornerRadius: 1)
+                                        .fill(Color.colorForLevel(0, theme: entry.theme))
+                                        .frame(width: 4.0, height: 4.0)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            Spacer(minLength: 4)
+            
+            // Footer
+            HStack {
+                Text("Learn how we count contributions")
+                    .font(.system(size: 8))
+                    .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                
+                Spacer()
+                
+                HStack(spacing: 2) {
+                    Text("Less")
+                        .font(.system(size: 8))
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                    ForEach(0...4, id: \.self) { level in
+                        RoundedRectangle(cornerRadius: 1)
+                            .fill(Color.colorForLevel(level, theme: entry.theme))
+                            .frame(width: 4.0, height: 4.0)
+                    }
+                    Text("More")
+                        .font(.system(size: 8))
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                }
+            }
+            .padding(.leading, 24)
+        }
+    }
+    
+    // --- 3. LARGE WIDGET LAYOUT (Full Sleek Dashboard) ---
+    private func renderLargeWidget(profile: GitHubUserProfile) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            // Header Profile Info
+            HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(profile.name)
-                        .font(.headline)
-                        .fontWeight(.bold)
-                    if let bio = profile.bio {
-                        Text(bio)
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                    }
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundColor(.white)
+                    Text("@\(profile.username)")
+                        .font(.system(size: 11))
+                        .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
                 }
+                
                 Spacer()
                 
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("Stars: \(profile.stars) ⭐")
-                        .font(.system(size: 10))
+                // Stars & Followers
+                HStack(spacing: 8) {
+                    Text("⭐ \(profile.stars)")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(Color.white.opacity(0.06))
+                        .cornerRadius(4)
+                    
                     Text("Followers: \(profile.followers)")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(Color.white.opacity(0.06))
+                        .cornerRadius(4)
                 }
             }
             
-            // Stats Row
-            HStack(spacing: 8) {
-                VStack(spacing: 4) {
-                    Text("CONTRIBUTIONS")
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
-                    Text("\(profile.totalContributions)")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(Color.white.opacity(0.04))
-                .cornerRadius(10)
-                
-                VStack(spacing: 4) {
-                    Text("CURRENT STREAK")
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
-                    Text("\(profile.currentStreak) 🔥")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(Color.white.opacity(0.04))
-                .cornerRadius(10)
-                
-                VStack(spacing: 4) {
-                    Text("LONGEST STREAK")
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
-                    Text("\(profile.longestStreak) 🏆")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(Color.white.opacity(0.04))
-                .cornerRadius(10)
-            }
+            // Full Grid
+            renderMediumWidget(profile: profile)
             
-            // Contribution Grid (Last 20 Weeks)
-            let weeksToShow = 20
-            let daysToShow = weeksToShow * 7
-            let recentDays = Array(profile.contributions.suffix(daysToShow))
+            Divider()
+                .background(Color(red: 48/255, green: 54/255, blue: 61/255))
             
-            HStack(spacing: 3) {
-                ForEach(0..<weeksToShow, id: \.self) { weekIdx in
-                    let startIndex = weekIdx * 7
-                    if startIndex < recentDays.count {
-                        VStack(spacing: 3) {
-                            ForEach(0..<7, id: \.self) { dayIdx in
-                                let index = startIndex + dayIdx
-                                if index < recentDays.count {
-                                    let day = recentDays[index]
-                                    RoundedRectangle(cornerRadius: 2.5)
-                                        .fill(Color.colorForLevel(day.level, theme: entry.theme))
-                                        .frame(width: 10, height: 10)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            
-            // Active Pull Requests List
-            if profile.authenticated && (!profile.incomingPRs.isEmpty || !profile.outgoingPRs.isEmpty) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("ACTIVE PULL REQUESTS")
-                        .font(.system(size: 9))
-                        .fontWeight(.bold)
-                        .foregroundColor(.secondary)
+            // Active PRs list
+            if !profile.outgoingPRs.isEmpty || !profile.incomingPRs.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Active Pull Requests")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.white)
                     
                     let combinedPRs = Array(profile.outgoingPRs.prefix(2)) + Array(profile.incomingPRs.prefix(2))
                     ForEach(combinedPRs, id: \.self) { pr in
                         HStack {
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(pr.title)
-                                    .font(.system(size: 11))
-                                    .fontWeight(.semibold)
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundColor(.white)
                                     .lineLimit(1)
-                                Text(pr.author != nil ? "Waiting for review • \(pr.repo)" : "Authored • \(pr.repo)")
-                                    .font(.system(size: 9))
-                                    .foregroundColor(.secondary)
+                                Text(pr.author != nil ? "Incoming Review • \(pr.repo)" : "Authored PR • \(pr.repo)")
+                                    .font(.system(size: 8))
+                                    .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
                             }
                             Spacer()
-                            Image(systemName: "arrow.up.forward")
+                            Image(systemName: "arrow.up.forward.square.fill")
                                 .font(.system(size: 10))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.green)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.white.opacity(0.03))
-                        .cornerRadius(8)
+                        .background(Color.white.opacity(0.04))
+                        .cornerRadius(6)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            
+            Spacer()
+        }
+    }
+    
+    // --- LAYOUT HELPERS ---
+    private func formatNumber(_ num: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: num)) ?? "\(num)"
+    }
+    
+    private func getMonthName(for dateStr: String) -> String {
+        let parts = dateStr.components(separatedBy: "-")
+        guard parts.count >= 2, let monthInt = Int(parts[1]) else { return "" }
+        let months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        if monthInt >= 1 && monthInt <= 12 {
+            return months[monthInt]
+        }
+        return ""
+    }
+    
+    private func getMonthPositions(recentDays: [GitHubContributionDay]) -> [(name: String, offset: CGFloat)] {
+        var positions: [(name: String, offset: CGFloat)] = []
+        var lastMonth = ""
+        let colWidth: CGFloat = 5.2 // cellSize (4.0) + cellSpacing (1.2)
+        
+        for weekIdx in 0..<53 {
+            let startIndex = weekIdx * 7
+            guard startIndex < recentDays.count else { continue }
+            let dateStr = recentDays[startIndex].date
+            let monthName = getMonthName(for: dateStr)
+            
+            if monthName != lastMonth && !monthName.isEmpty {
+                positions.append((name: monthName, offset: CGFloat(weekIdx) * colWidth))
+                lastMonth = monthName
+            }
+        }
+        
+        // Prevent overlapping
+        var filtered: [(name: String, offset: CGFloat)] = []
+        var lastOffset: CGFloat = -100
+        for pos in positions {
+            if pos.offset - lastOffset > 18 {
+                filtered.append(pos)
+                lastOffset = pos.offset
+            }
+        }
+        return filtered
+    }
+    
+    private func renderMonthLabels(recentDays: [GitHubContributionDay]) -> some View {
+        let positions = getMonthPositions(recentDays: recentDays)
+        return ZStack(alignment: .leading) {
+            Color.clear.frame(height: 10)
+            ForEach(0..<positions.count, id: \.self) { i in
+                Text(positions[i].name)
+                    .font(.system(size: 8))
+                    .foregroundColor(Color(red: 125/255, green: 133/255, blue: 144/255))
+                    .offset(x: positions[i].offset)
             }
         }
     }
@@ -330,9 +346,9 @@ public struct TahoeWidget: Widget {
     public var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: TahoeWidgetTimelineProvider()) { entry in
             TahoeWidgetEntryView(entry: entry)
-                .containerBackground(.black.opacity(0.1), for: .widget)
+                .containerBackground(Color(red: 13/255, green: 17/255, blue: 23/255), for: .widget) // GitHub Dark Mode #0d1117
         }
-        .configurationDisplayName("GitHub Tahoe Widget")
+        .configurationDisplayName("GitHub Contributions Widget")
         .description("Display your GitHub contributions calendar and active pull requests on your desktop.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
