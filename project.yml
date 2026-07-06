@@ -13,6 +13,8 @@ targets:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.Suryanshsaraf.GitHubTahoeApp
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: U5277LWTD3
     info:
       path: GitHubTahoeApp/Info.plist
     dependencies:
@@ -25,6 +27,8 @@ targets:
       - path: GitHubTahoeWidget
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.Suryanshsaraf.GitHubTahoeApp.WidgetExtension
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: U5277LWTD3
     info:
       path: GitHubTahoeWidget/Info.plist
       properties:
