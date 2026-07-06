@@ -1,88 +1,67 @@
-# GitHub Tahoe: Native macOS WidgetKit App
+# 🟢 macOS GitHub Contributions Widget
 
-A premium, native macOS desktop widget for tracking your GitHub contributions, active streaks, stars, and review queues. Built natively using **SwiftUI**, **WidgetKit**, and the **macOS 26 Tahoe "Liquid Glass"** visual system.
+I wanted a native GitHub contribution grid on my Mac desktop wallpaper without having to run a heavy third-party app or a browser wrapper in the background. So, I built this! 
 
----
+It's a fully native macOS desktop widget written in **SwiftUI** and **WidgetKit** that displays your contribution calendar grid in clean, official GitHub dark mode styling. 
 
-## ⚡ Features
-
-* **Direct Desktop Placement:** Drag, drop, and resize widgets natively on the macOS desktop wallpaper.
-* **Liquid Glass Backing:** Uses macOS native `NSVisualEffectView` frosted glass overlays and animated background liquid gradient orbs.
-* **Dynamic Streaks:** Track contribution streaks (current vs. longest) with active emoji highlights.
-* **Review Queue Dashboard (GraphQL):** Tracks active pull requests waiting for review and outgoing PR statuses (requires token).
-* **Multi-Size Layouts:** Fully responsive small, medium, and large layouts matching Apple's widget guidelines.
-* **XcodeGen Powered:** No messy Xcode project merge conflicts; the project structure is cleanly generated on-the-fly.
+> [!NOTE]  
+> **This project is strictly for personal practice and coding fun.** It is not for any college submissions, academic grades, or portfolio padding—just direct hands-on practice learning macOS system widget coordination, App Group containers, and Swift networking.
 
 ---
 
-## 📂 Project Structure
+## What it does
 
-```
-github-tahoe-widget/
-├── project.yml                 # XcodeGen configuration target file
-├── .gitignore                  # Excludes generated projects and build caches
-├── README.md                   # Setup and usage guide
-├── GitHubTahoeApp/             # macOS Host Configurator App
-│   ├── AppEntry.swift          # Main entry point (App window setup)
-│   ├── ContentView.swift       # Form UI (Username, PAT, Theme picker)
-│   ├── GitHubTahoeModel.swift  # Profile, PR, and Day data structures
-│   ├── GitHubNetworkService.swift # REST & GraphQL API data fetcher
-│   ├── WidgetSettingsStore.swift  # Shared database coordinator (App Groups)
-│   └── LiquidGlassTheme.swift  # Frosted glass modifiers & animated blobs
-└── GitHubTahoeWidget/          # macOS Widget Extension Target
-    ├── Info.plist              # Widget metadata config
-    ├── TahoeWidgetTimelineProvider.swift # Timeline loading and cache provider
-    └── TahoeWidgetView.swift   # Small, Medium, and Large SwiftUI widget templates
-```
+*   **Native Desktop Grid:** Drag, drop, and place your GitHub contribution grid directly on your Mac desktop wallpaper (natively supported in macOS Sonoma/Sequoia).
+*   **Automatic & Manual Sync:** Automatically pulls new data every 15 minutes in the background, or updates instantly when you click "Save" in the configurator app.
+*   **Custom Color Themes:** Switch between standard GitHub Greens, Aurora Cyans, Sunset Oranges, or minimalist Graphite Grays in the configurator app.
+*   **Token-Free Public Mode:** Runs instantly by scraping public profile data (zero configuration required).
+*   **Authenticated GraphQL Mode (Optional):** Add a GitHub Personal Access Token (PAT) to track private contributions.
+*   **PR Review Queue (Optional):** If you use a token and drag out the **Large** size widget, it displays active PR review requests at the bottom so you know when someone is waiting on you.
 
 ---
 
-## 🚀 Setup & Installation
+## 🛠️ How to run it on your Mac
 
-### Step 1: Install XcodeGen
-This project utilizes **XcodeGen** to build the Xcode project structure programmatically. Install it via Homebrew:
+Since it's a native macOS app compiled with developer certificates, you'll need Xcode (free on the Mac App Store) to build it locally.
+
+### 1. Generate the Xcode project
+We use `xcodegen` to keep the repo clean. Install it via Homebrew and generate the project file:
 ```bash
 brew install xcodegen
-```
-
-### Step 2: Generate the Xcode Project
-In your terminal, navigate to the project directory and run:
-```bash
 xcodegen generate
 ```
-This will compile `project.yml` and output a ready-to-run Xcode project file: `GitHubTahoeApp.xcodeproj`.
+This outputs `GitHubTahoeApp.xcodeproj`.
 
-### Step 3: Configure Signing & App Groups
-1. Double-click the generated `GitHubTahoeApp.xcodeproj` to open it in Xcode.
-2. Select the root **GitHubTahoeApp** in the Project Navigator (left pane).
-3. Under the **Signing & Capabilities** tab:
-   * Select your target **GitHubTahoeApp**:
-     * Set **Signing Certificate** to **"Sign to Run Locally"** (or select your personal Apple Developer Team).
-     * Add **App Groups** and configure it with: `group.com.Suryanshsaraf.github-tahoe-widget`.
-   * Select your target **GitHubTahoeWidget**:
-     * Set **Signing Certificate** to **"Sign to Run Locally"** (must match the host app).
-     * Add **App Groups** and check `group.com.Suryanshsaraf.github-tahoe-widget`.
+### 2. Configure Code Signing & App Groups in Xcode
+Because widgets share data with a host configurator app, macOS requires them to be signed under the same developer team:
+1. Open `GitHubTahoeApp.xcodeproj` in Xcode.
+2. Select the blue **GitHubTahoeApp** project at the top of the left sidebar.
+3. Click the **Signing & Capabilities** tab in the center panel.
+4. Under **TARGETS** on the left:
+    * Select **GitHubTahoeApp** and choose your personal Apple ID name in the **Team** dropdown.
+    * Select **GitHubTahoeWidget** and choose the exact same **Team** in the dropdown.
+5. Xcode will automatically resolve the provisioning profiles, and the red warnings will turn green.
 
-### Step 4: Build & Save Settings
-1. Build and Run (`Cmd + R`) the **GitHubTahoeApp** target.
-2. The config window will open. Type in your GitHub username (`Suryanshsaraf`).
-3. (Optional) Paste in a **GitHub Personal Access Token (Classic)** with the `repo` and `read:user` scopes to activate **Private Mode** (tracks private contributions and pull request reviews).
-4. Select your theme (e.g. **Tahoe Dream**) and click **Save Settings**.
+### 3. Build and Run!
+1. Set the target scheme at the top of Xcode (next to the Play button) to **`GitHubTahoeApp`**.
+2. Press **Play** (`Cmd + R`) to compile and run.
+3. The configuration app window will open. Type in your GitHub username, paste an optional token, choose your theme color, and click **Save & Apply**.
+4. Close the configurator app.
 
-### Step 5: Add Widget to Desktop
-1. Right-click your macOS desktop background and select **"Edit Widgets..."**.
-2. Scroll or search for **"GitHub Tahoe Widget"**.
-3. Choose your preferred size:
-   * **Small:** Shows your total contributions and current streak 🔥.
-   * **Medium:** Shows your profile header and an 18-week contribution grid.
-   * **Large:** Shows your profile header, full streaks stats row, 20-week contribution grid, and active pull request review queues.
-4. Drag it anywhere on your desktop wallpaper!
+### 4. Add the Widget to your Wallpaper
+1. Right-click your desktop wallpaper and select **"Edit Widgets..."** (or open the Notification Center and click "Edit Widgets").
+2. Search for **"GitHub Contributions Widget"**.
+3. Choose your size:
+    * **Small:** Quick stats and current streak.
+    * **Medium:** Simple and sleek 1-year contribution grid (looks exactly like the GitHub profile chart!).
+    * **Large:** Full stats row, 1-year grid, and active pull requests tracking.
+4. Drag it onto your desktop!
 
 ---
 
-## 🎨 Themes Available
+## 📂 Code Layout
 
-* **Tahoe Dream:** Vibrant Neon Cyan, Hot Pink, and Violet gradient blobs drifting behind frosted glass.
-* **Aurora Glass:** Refreshing Emerald Green, Mint, and Marine Blue background blobs.
-* **Sunset Glow:** Rich Orange, Ember Red, and Magenta gradients.
-* **Graphite Matte:** Minimalist, high-end monochrome glass look.
+*   `project.yml` - Project setup file for XcodeGen.
+*   `GitHubTahoeApp/` - Host settings app to save usernames, PATs, and colors.
+*   `GitHubTahoeWidget/` - The extension that renders the widget views and manages background timeline intervals.
+*   `GitHubTahoeApp.entitlements` / `GitHubTahoeWidget.entitlements` - System capability configurations enabling sandbox network access and shared App Group containers.
