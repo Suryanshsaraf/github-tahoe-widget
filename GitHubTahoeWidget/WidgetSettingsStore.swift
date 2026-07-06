@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
 public class WidgetSettingsStore: ObservableObject {
     public static let shared = WidgetSettingsStore()
@@ -30,7 +33,6 @@ public class WidgetSettingsStore: ObservableObject {
         
         // Notify Widget Center that values changed
         #if canImport(WidgetKit)
-        import WidgetKit
         WidgetCenter.shared.reloadAllTimelines()
         #endif
     }

@@ -12,8 +12,9 @@ targets:
       - path: GitHubTahoeApp
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.Suryanshsaraf.GitHubTahoeApp
-      DEVELOPMENT_ASSET_PATHS: '"GitHubTahoeApp/Preview Content"'
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: GitHubTahoeApp/Info.plist
 
   GitHubTahoeWidget:
     type: app-extension
