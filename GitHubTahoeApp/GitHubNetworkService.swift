@@ -260,7 +260,21 @@ public class GitHubNetworkService {
         
         // Parse HTML using Regex
         let days = parseContributions(html: html)
-        let totalContributions = days.reduce(0) { $0 + $1.count }
+        var totalContributions = days.reduce(0) { $0 + $1.count } // Fallback
+        
+        // Parse exact total contributions from HTML heading
+        let headingPattern = "([\\d,]+)\\s+contributions\\s+in\\s+the\\s+last\\s+year"
+        if let regex = try? NSRegularExpression(pattern: headingPattern, options: [.caseInsensitive]) {
+            let nsRange = NSRange(html.startIndex..<html.endIndex, in: html)
+            if let match = regex.firstMatch(in: html, options: [], range: nsRange),
+               let countRange = Range(match.range(at: 1), in: html) {
+                let cleanStr = html[countRange].replacingOccurrences(of: ",", with: "")
+                if let parsedCount = Int(cleanStr) {
+                    totalContributions = parsedCount
+                }
+            }
+        }
+        
         let streaks = calculateStreaks(days: days)
         
         return GitHubUserProfile(
