@@ -6,7 +6,7 @@ import WidgetKit
 public class WidgetSettingsStore: ObservableObject {
     public static let shared = WidgetSettingsStore()
     
-    private let appGroupId = "group.com.Suryanshsaraf.github-tahoe-widget"
+    private let appGroupId = "group.U5277LWTD3.com.Suryanshsaraf.github-tahoe-widget"
     
     @Published public var username: String = ""
     @Published public var token: String = ""
