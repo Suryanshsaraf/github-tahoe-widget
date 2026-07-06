@@ -72,7 +72,8 @@ public struct LiquidGlassModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .background(
-                VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
+                Rectangle()
+                    .fill(.ultraThinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             )
             .background(
