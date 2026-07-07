@@ -1,4 +1,4 @@
-# 🟢 macOS GitHub Contributions Widget
+#  🟢 macOS GitHub Contributions Widget
 
 I wanted a native GitHub contribution grid on my Mac desktop wallpaper without having to run a heavy third-party app or a browser wrapper in the background. So, I built this! 
 
